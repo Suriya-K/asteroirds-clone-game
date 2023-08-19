@@ -1,0 +1,31 @@
+[gd_scene load_steps=6 format=3 uid="uid://b2oarqigdhen0"]
+
+[ext_resource type="Texture2D" uid="uid://bf8yjlb5ssthu" path="res://resources/ship-idle.png" id="1_36o51"]
+[ext_resource type="Script" path="res://scripts/ship.gd" id="1_digal"]
+[ext_resource type="Script" path="res://scripts/SpawnBulletPoint.gd" id="3_nflbh"]
+[ext_resource type="AudioStream" uid="uid://c1s0526qh3v0s" path="res://resources/laser1.ogg" id="4_f50t0"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_l3uqp"]
+size = Vector2(54, 35)
+
+[node name="Ship" type="CharacterBody2D"]
+collision_mask = 26
+script = ExtResource("1_digal")
+
+[node name="Sprite" type="Sprite2D" parent="."]
+texture = ExtResource("1_36o51")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(7, -1.5)
+shape = SubResource("RectangleShape2D_l3uqp")
+
+[node name="SpawnBulletPoint" type="Marker2D" parent="."]
+position = Vector2(34, -2)
+script = ExtResource("3_nflbh")
+
+[node name="SoundLaser" type="AudioStreamPlayer2D" parent="SpawnBulletPoint"]
+position = Vector2(-34, 2)
+stream = ExtResource("4_f50t0")
+volume_db = -10.0
+
+[connection signal="spawn_bullet" from="SpawnBulletPoint" to="." method="_on_spawn_bullet_point_spawn_bullet"]

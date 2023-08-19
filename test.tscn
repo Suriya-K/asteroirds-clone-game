@@ -1,0 +1,89 @@
+[gd_scene load_steps=6 format=3 uid="uid://c20h12l3yg6w6"]
+
+[ext_resource type="Script" path="res://main.gd" id="1_5q0va"]
+[ext_resource type="PackedScene" uid="uid://b2oarqigdhen0" path="res://prefabs/ship.tscn" id="1_6bkd7"]
+[ext_resource type="Script" path="res://scripts/AsteroidSpawner.gd" id="3_42fn4"]
+[ext_resource type="PackedScene" uid="uid://etco7fsx661x" path="res://prefabs/asteroid_type_1.tscn" id="3_ttio8"]
+
+[sub_resource type="Curve2D" id="Curve2D_6amgy"]
+_data = {
+"points": PackedVector2Array(0, 0, 0, 0, -64, -64, 0, 0, 0, 0, 1344, -64, 0, 0, 0, 0, 1344, 768, 0, 0, 0, 0, -64, 768, 0, 0, 0, 0, -64, -64)
+}
+point_count = 5
+
+[node name="test" type="Node2D"]
+
+[node name="GameController" type="Node" parent="."]
+script = ExtResource("1_5q0va")
+
+[node name="RestartTimer" type="Timer" parent="GameController"]
+wait_time = 2.0
+one_shot = true
+
+[node name="Ship" parent="." instance=ExtResource("1_6bkd7")]
+position = Vector2(640, 360)
+rotation = -1.5708
+
+[node name="AsteroidSpawner" type="Node" parent="."]
+script = ExtResource("3_42fn4")
+asteroid_type = Array[PackedScene]([ExtResource("3_ttio8")])
+
+[node name="Timer" type="Timer" parent="AsteroidSpawner"]
+wait_time = 2.5
+autostart = true
+
+[node name="Path2D" type="Path2D" parent="AsteroidSpawner"]
+position = Vector2(58.1818, 55.3846)
+scale = Vector2(0.909091, 0.865385)
+curve = SubResource("Curve2D_6amgy")
+
+[node name="PathFollow2D" type="PathFollow2D" parent="AsteroidSpawner/Path2D"]
+modulate = Color(0.807843, 0, 0, 1)
+position = Vector2(-64, -64)
+metadata/_edit_lock_ = true
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+metadata/_edit_lock_ = true
+
+[node name="PlayerControl" type="Node" parent="Control"]
+
+[node name="PlayerStats" type="RichTextLabel" parent="Control/PlayerControl"]
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 136.0
+offset_bottom = 77.0
+text = "LIVE: 0
+SCORE: 0
+HI:0
+"
+fit_content = true
+
+[node name="GameOver" type="RichTextLabel" parent="Control/PlayerControl"]
+visible = false
+offset_top = 325.0
+offset_right = 1280.0
+offset_bottom = 394.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_vertical = 4
+theme_override_font_sizes/normal_font_size = 50
+bbcode_enabled = true
+text = "[center]GAME OVER
+
+PRESS ANYKEY RESTART"
+fit_content = true
+scroll_active = false
+
+[connection signal="player_dead" from="GameController" to="Ship" method="_on_game_controller_player_dead"]
+[connection signal="timeout" from="GameController/RestartTimer" to="GameController" method="_on_restart_timer_timeout"]
+[connection signal="dead" from="Ship" to="GameController" method="_on_player_dead"]
+[connection signal="tree_exiting" from="Ship" to="AsteroidSpawner" method="_on_ship_tree_exiting"]
+[connection signal="timeout" from="AsteroidSpawner/Timer" to="AsteroidSpawner" method="_on_timer_timeout"]

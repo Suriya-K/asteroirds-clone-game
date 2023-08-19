@@ -1,0 +1,110 @@
+[gd_scene load_steps=7 format=3 uid="uid://etco7fsx661x"]
+
+[ext_resource type="Texture2D" uid="uid://mlniy74je8py" path="res://resources/asteroid-1.png" id="1_1kwnp"]
+[ext_resource type="Script" path="res://scripts/asteroid.gd" id="1_6e42d"]
+[ext_resource type="AudioStream" uid="uid://c7bx5ft7nntoi" path="res://resources/explosion2.ogg" id="3_yu3pq"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_nktay"]
+radius = 69.1158
+
+[sub_resource type="Animation" id="Animation_r0gfq"]
+resource_name = "asteroid_hit_queue"
+step = 0.01
+tracks/0/type = "method"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(1),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [],
+"method": &"queue_free"
+}]
+}
+tracks/1/type = "audio"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("SoundExplosion")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"clips": [{
+"end_offset": 0.0,
+"start_offset": 0.0,
+"stream": ExtResource("3_yu3pq")
+}],
+"times": PackedFloat32Array(0)
+}
+tracks/1/use_blend = true
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath(".:visible")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Area2D:collision_mask")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+tracks/4/type = "method"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath(".")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(),
+"transitions": PackedFloat32Array(),
+"values": []
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_bqj5l"]
+_data = {
+"asteroid_hit_queue": SubResource("Animation_r0gfq")
+}
+
+[node name="AsteroidType1" type="Node2D" groups=["asteroid", "bullet"]]
+visibility_layer = 5
+script = ExtResource("1_6e42d")
+
+[node name="VisibleOnScreenNotifier2D" type="VisibleOnScreenNotifier2D" parent="."]
+
+[node name="Area2D" type="Area2D" parent="."]
+collision_layer = 2
+collision_mask = 5
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+shape = SubResource("CircleShape2D_nktay")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_1kwnp")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_bqj5l")
+}
+
+[node name="SoundExplosion" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("3_yu3pq")
+volume_db = -10.0
+pitch_scale = 0.5
+
+[connection signal="area_entered" from="Area2D" to="." method="_on_area_2d_area_entered"]
+[connection signal="body_entered" from="Area2D" to="." method="_on_area_2d_body_entered"]
